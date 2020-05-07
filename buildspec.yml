@@ -1,49 +1,28 @@
-# ---
-# version: 0.2
-
-# env:
-#   variables:
-#     key: "value"
-
-# phases:
-#   install:
-#     commands:
-#       - echo "install step"
-#   pre_build:
-#     commands:
-#       - echo "pre_build step"
-#   build:
-#     commands:
-#       - echo "build command"
-#   post_build:
-#     commands:
-#       - echo Uploading artifact to S3.
-#       - apt-get install curl
-#       - curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-#       - unzip awscliv2.zip
-#       - sudo ./aws/install
-#       - aws2 s3api cp $ARTIFACT_FILENAME s3://$RELEASE_BUCKET_NAME/$ARTIFACT_NAME
-#       - echo Updating release key.
-#       - aws2 --region=eu-west-2 ssm put-parameter --name /$APP_NAME/releases/$CODEBUILD_RESOLVED_SOURCE_VERSION --value $ARTIFACT_FILENAME --type String --overwrite
-#       - aws2 --region=eu-west-2 ssm put-parameter --name /$APP_NAME/releases/latest --value $ARTIFACT_FILENAME --type String --overwrite
-
-# artifacts:
-#   files:
-#     - $ARTIFACT_FILENAME
-
-
-
+---
 version: 0.2
+
+env:
+  variables:
+    key: "value"
+
 phases:
   install:
     commands:
-      - echo "install step"
+      - make install
   pre_build:
     commands:
-      - echo "pre_build step"
+      - make test
   build:
     commands:
-      - echo "build command"
+      - make build
   post_build:
     commands:
-      - echo "post_build step"
+      - echo Uploading artifact to S3.
+      - aws s3 cp $ARTIFACT_FILENAME s3://$RELEASE_BUCKET_NAME/$ARTIFACT_NAME
+      - echo Updating release key.
+      - aws --region=eu-west-2 ssm put-parameter --name /$APP_NAME/releases/$CODEBUILD_RESOLVED_SOURCE_VERSION --value $ARTIFACT_FILENAME --type String --overwrite
+      - aws --region=eu-west-2 ssm put-parameter --name /$APP_NAME/releases/latest --value $ARTIFACT_FILENAME --type String --overwrite
+
+artifacts:
+  files:
+    - $ARTIFACT_FILENAME

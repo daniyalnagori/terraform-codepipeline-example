@@ -33,8 +33,9 @@
 
 
 
-
-install:
+version: 0.2
+phases:
+  install:
     commands:
       - echo "install step"
   pre_build:

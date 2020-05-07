@@ -8,13 +8,13 @@ env:
 phases:
   install:
     commands:
-      - make install
+      - echo "install step"
   pre_build:
     commands:
-      - make test
+      - echo "pre_build step"
   build:
     commands:
-      - make build
+      - echo "build command"
   post_build:
     commands:
       - echo Uploading artifact to S3.

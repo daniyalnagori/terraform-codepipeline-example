@@ -28,7 +28,7 @@ resource "aws_codebuild_project" "deploy_dev" {
 
   environment {
     compute_type = "BUILD_GENERAL1_SMALL"
-    image        = "hashicorp/terraform:0.11.1"
+    image        = "aws/codebuild/standard:1.0"
     type         = "LINUX_CONTAINER"
 
     environment_variable {
@@ -55,7 +55,7 @@ resource "aws_codebuild_project" "deploy_prod" {
 
   environment {
     compute_type = "BUILD_GENERAL1_SMALL"
-    image        = "hashicorp/terraform:0.11.1"
+    image        = "aws/codebuild/standard:1.0"
     type         = "LINUX_CONTAINER"
 
     environment_variable {

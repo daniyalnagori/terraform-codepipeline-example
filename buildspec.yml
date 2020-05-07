@@ -18,10 +18,10 @@ phases:
   post_build:
     commands:
       - echo Uploading artifact to S3.
-      - aws s3 cp $ARTIFACT_FILENAME s3://$RELEASE_BUCKET_NAME/$ARTIFACT_NAME
+      - aws2 s3api cp $ARTIFACT_FILENAME s3://$RELEASE_BUCKET_NAME/$ARTIFACT_NAME
       - echo Updating release key.
-      - aws --region=eu-west-2 ssm put-parameter --name /$APP_NAME/releases/$CODEBUILD_RESOLVED_SOURCE_VERSION --value $ARTIFACT_FILENAME --type String --overwrite
-      - aws --region=eu-west-2 ssm put-parameter --name /$APP_NAME/releases/latest --value $ARTIFACT_FILENAME --type String --overwrite
+      - aws2 --region=eu-west-2 ssm put-parameter --name /$APP_NAME/releases/$CODEBUILD_RESOLVED_SOURCE_VERSION --value $ARTIFACT_FILENAME --type String --overwrite
+      - aws2 --region=eu-west-2 ssm put-parameter --name /$APP_NAME/releases/latest --value $ARTIFACT_FILENAME --type String --overwrite
 
 artifacts:
   files:

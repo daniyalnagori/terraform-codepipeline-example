@@ -1,32 +1,60 @@
----
-version: 0.2
+# ---
+# version: 0.2
 
-env:
-  variables:
-    key: "value"
+# env:
+#   variables:
+#     key: "value"
+
+# phases:
+#   install:
+#     commands:
+#       - echo "install step"
+#   pre_build:
+#     commands:
+#       - echo "pre_build step"
+#   build:
+#     commands:
+#       - echo "build command"
+#   post_build:
+#     commands:
+#       - echo Uploading artifact to S3.
+#       - apt-get install curl
+#       - curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+#       - unzip awscliv2.zip
+#       - sudo ./aws/install
+#       - aws2 s3api cp $ARTIFACT_FILENAME s3://$RELEASE_BUCKET_NAME/$ARTIFACT_NAME
+#       - echo Updating release key.
+#       - aws2 --region=eu-west-2 ssm put-parameter --name /$APP_NAME/releases/$CODEBUILD_RESOLVED_SOURCE_VERSION --value $ARTIFACT_FILENAME --type String --overwrite
+#       - aws2 --region=eu-west-2 ssm put-parameter --name /$APP_NAME/releases/latest --value $ARTIFACT_FILENAME --type String --overwrite
+
+# artifacts:
+#   files:
+#     - $ARTIFACT_FILENAME
+
+
+
+
+version: 0.2
 
 phases:
   install:
+    runtime-versions:
+      python: 3.7
     commands:
-      - echo "install step"
-  pre_build:
-    commands:
-      - echo "pre_build step"
+      - "cd /usr/bin"
+      - "curl -s -qL -o terraform.zip https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip"
+      - "unzip -o terraform.zip"
+
   build:
     commands:
-      - echo "build command"
+      - cd "$CODEBUILD_SRC_DIR"
+      - terraform init -input=false --backend-config=./env_vars/${TF_ENV}.conf
+      - terraform ${TF_ACTION} -input=false -var-file=./env_vars/${TF_ENV}.tfvars -auto-approve
+
   post_build:
     commands:
-      - echo Uploading artifact to S3.
-      - apt-get install curl
-      - curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-      - unzip awscliv2.zip
-      - sudo ./aws/install
-      - aws2 s3api cp $ARTIFACT_FILENAME s3://$RELEASE_BUCKET_NAME/$ARTIFACT_NAME
-      - echo Updating release key.
-      - aws2 --region=eu-west-2 ssm put-parameter --name /$APP_NAME/releases/$CODEBUILD_RESOLVED_SOURCE_VERSION --value $ARTIFACT_FILENAME --type String --overwrite
-      - aws2 --region=eu-west-2 ssm put-parameter --name /$APP_NAME/releases/latest --value $ARTIFACT_FILENAME --type String --overwrite
+      - echo "Terraform completed on `date`"
 
 artifacts:
   files:
-    - $ARTIFACT_FILENAME
+    - '**/*'
